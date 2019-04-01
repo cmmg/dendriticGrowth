@@ -19,8 +19,8 @@
 #include <cmath>
 #include <limits>
 
-double generateGaussianNoise(double mu, double sigma, double seedVal)
-//double generateGaussianNoise(double mu, double sigma)
+//double generateGaussianNoise(double mu, double sigma, double seedVal)
+double generateGaussianNoise(double mu, double sigma)
 
 
 {
@@ -41,7 +41,7 @@ double generateGaussianNoise(double mu, double sigma, double seedVal)
 	do
 	 {
 	   //unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	   std::srand(seedVal);
+	   //  std::srand(seedVal);
 	   u1 = rand() * (1.0 / RAND_MAX);
 	   u2 = rand() * (1.0 / RAND_MAX);
 	 }
@@ -53,40 +53,7 @@ double generateGaussianNoise(double mu, double sigma, double seedVal)
 	return z0 * sigma + mu;
 }
 
-double generateGaussianNoise1(double mu, double sigma, double seedVal)
-
-//double generateGaussianNoise1(double mu, double sigma)
-{
-	static const double epsilon = std::numeric_limits<double>::min();
-	static const double two_pi = 2.0*3.14159265358979323846;
-
-	thread_local double z1;
-	thread_local bool generate;
-	generate = !generate;
-
-	if (!generate)
-	   return z1 * sigma + mu;
-
-
-	
-	
-	double u1, u2;
-	do
-	 {
-	   // unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	   std::srand(seedVal);
-	   u1 = rand() * (1.0 / RAND_MAX);
-	   u2 = rand() * (1.0 / RAND_MAX);
-	 }
-	while ( u1 <= epsilon );
-
-	double z0;
-	z0 = sqrt(-2.0 * log(u1)) * cos(two_pi * u2);
-	z1 = sqrt(-2.0 * log(u1)) * sin(two_pi * u2);
-	return z0 * sigma + mu;
-}
-
-
+//double generateGaussianNoise1(double mu, double sigma, double seedVal)
 
 //Chemistry residual implementation
 template <int dim>
@@ -137,7 +104,7 @@ void residualForChemo(FEValues<dim>& fe_values, unsigned int DOF, FEFaceValues<d
       //   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
       //std::default_random_engine generator (seed);
 
-      double fact = pow(2.11,-7);
+      double fact = pow(5.27,-6);
       //   Sacado::Fad::DFad<double> std_dev = std::sqrt(2*( 1-phi[q] + ke*(1+phi[q])*(DS/DL) )*(1+(1-ke)*c[q])*(fact)) ;
       double std_dev = std::sqrt(abs(2*( 1-phi_conv[q] + ke*(1+phi_conv[q])*(DS/DL) )*(1+(1-ke)*c_conv[q])*(fact))) ;
 
@@ -148,7 +115,8 @@ void residualForChemo(FEValues<dim>& fe_values, unsigned int DOF, FEFaceValues<d
       Point<dim> quadPoint=fe_values.quadrature_point(q);   
       
       //noise term
-      std::srand(5);       
+      //  std::srand(5);
+      std::srand(quadPoint.square());
       double noise1 = OMEGA1*( 2.0*(double)(std::rand() % 100)/100.0 -1.0 ) ;
            
       Sacado::Fad::DFad<double>  coupling = lam*(1-phi[q]*phi[q])*(1-phi[q]*phi[q]);
@@ -173,7 +141,12 @@ void residualForChemo(FEValues<dim>& fe_values, unsigned int DOF, FEFaceValues<d
       //std::cout<<"number1 is "<<generateGaussianNoise(0, 1) <<std::endl;
       //normal[0]=generateGaussianNoise(0, std_dev.val(), quadPoint.square()); normal[1]=generateGaussianNoise1(0, std_dev.val(), std::sqrt(quadPoint.square()));
       //normal[0]=generateGaussianNoise(0, std_dev, quadPoint.square()); normal[1]=generateGaussianNoise1(0, std_dev, std::sqrt(quadPoint.square()));
-      normal[0]=generateGaussianNoise(0, std_dev, quadPoint[0]); normal[1]=generateGaussianNoise1(0, std_dev, quadPoint[1]);
+
+      //std::srand(pow(quadPoint[0],0.25));
+      normal[0]=generateGaussianNoise(0, std_dev);
+      //std::srand(pow(quadPoint[1],0.25));
+      normal[1]=generateGaussianNoise(0, std_dev);
+      
       
       Sacado::Fad::DFad<double> QQ = 1-phi[q] + ke*(1+phi[q])*(DS/DL);
       double root2 = pow(2.0,-0.5);

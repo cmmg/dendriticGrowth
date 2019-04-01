@@ -38,7 +38,7 @@ namespace phaseField1
 	double centrex1= 307 ;
 	double centrex2= 512 ;	
 	double centrey=0 ;
-       	double radius =5.0 ;
+       	double radius =15.0 ;
 
 	double dist0 = (p[0]-centrex0)*(p[0]-centrex0) + (p[1]-centrey)*(p[1]-centrey) ;
 	dist0 = std::sqrt(dist0) ;
