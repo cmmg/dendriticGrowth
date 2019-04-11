@@ -11,6 +11,7 @@
 
 //time step controls
 #define TimeStep 0.005
+//#define TimeStep 0.5  //for a check
 #define TotalTime 15000*TimeStep
 
 //output controls

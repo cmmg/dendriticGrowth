@@ -61,7 +61,8 @@ void residualForChemo(FEValues<dim>& fe_values, unsigned int DOF, FEFaceValues<d
       
       // Sacado::Fad::DFad<double> dfdc  ;
       //noise term
-      std::srand(5);       
+      //std::srand(5);
+      std::srand(quadPoint.square()); //checking with varying seed. 
       double noise1 = OMEGA1*( 2.0*(double)(std::rand() % 100)/100.0 -1.0 ) ;
       
       

@@ -22,7 +22,8 @@ void residualForChemo(FEValues<dim>& fe_values, unsigned int DOF, FEFaceValues<d
   //evaluate gradients 
   dealii::Table<1,Sacado::Fad::DFad<double> > c(n_q_points), phi(n_q_points) , mu(n_q_points); 
   dealii::Table<2,Sacado::Fad::DFad<double> > c_j(n_q_points, dim), phi_j(n_q_points, dim) ;
-   dealii::Table<2,double> c_conv_j(n_q_points, dim), mu_conv_j(n_q_points,dim);
+  dealii::Table<2,double> c_conv_j(n_q_points, dim), mu_conv_j(n_q_points,dim);
+
   for (unsigned int q=0; q<n_q_points; ++q) {
     c[q]=0.0; c_conv[q]=0.0; phi[q]=0.0; phi_conv[q]=0.0 ;  mu[q]=0.0;  
     for (unsigned int j=0; j<dim; j++) {c_j[q][j]=0.0;  phi_j[q][j]=0.0; }
@@ -67,7 +68,7 @@ void residualForChemo(FEValues<dim>& fe_values, unsigned int DOF, FEFaceValues<d
       //Sacado::Fad::DFad<double> capM = (0.9/3.1416)*std::atan(10*(1-c[q]));
       //Sacado::Fad::DFad<double>  newdFdC = phi[q]*(1-phi[q])*(phi[q]-0.5+ noise+ capM);
       Sacado::Fad::DFad<double>  coupling = lam*(1-phi[q]*phi[q])*(1-phi[q]*phi[q]);
-      Sacado::Fad::DFad<double>  dfdc = phi[q]-phi[q]*phi[q]*phi[q];
+      Sacado::Fad::DFad<double>  dfdc = phi[q]- (phi[q]*phi[q]*phi[q]);
       dfdc+= -coupling*(c[q] +(1.0/thermal)*(quadPoint[1]-VV*currentTime)) ;
       dfdc+= (1-phi[q]*phi[q])*noise1;
       // dfdc=newdFdC;   
