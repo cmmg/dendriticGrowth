@@ -1,7 +1,4 @@
-//#include "/scratch/software/PRISM_PF/phaseField/include/matrixFreePDE.h"
-#include "/home/kbhagat2/workspace/software/phaseField/include/matrixFreePDE.h"
-
-
+#include "../../include/matrixFreePDE.h"
 
 template <int dim, int degree>
 class customPDE: public MatrixFreePDE<dim,degree>
@@ -17,7 +14,7 @@ public:
     void setNonUniformDirichletBCs(const dealii::Point<dim> &p, const unsigned int index, const unsigned int direction, const double time, double & scalar_BC, dealii::Vector<double> & vector_BC);
 
 private:
-	#include "/home/kbhagat2/workspace/software/phaseField/include/typeDefs.h"
+	#include "../../include/typeDefs.h"
 
 	const userInputParameters<dim> userInputs;
 
@@ -54,20 +51,16 @@ private:
 	// Model constants specific to this subclass
 	// ================================================================
 
+	double D = userInputs.get_model_constant_double("D");
+	double W0 = userInputs.get_model_constant_double("W0");
 	double delta = userInputs.get_model_constant_double("delta");
-	double D_tild = userInputs.get_model_constant_double("D_tild");
-	double ke = userInputs.get_model_constant_double("ke");
-	double DSbyDL = userInputs.get_model_constant_double("DSbyDL");
 	double epsilonM = userInputs.get_model_constant_double("epsilonM");
 	double theta0 = userInputs.get_model_constant_double("theta0");
-	double theta01 = userInputs.get_model_constant_double("theta01");
 	double mult = userInputs.get_model_constant_double("mult");
-	double lam = userInputs.get_model_constant_double("lam");
-	double VV = userInputs.get_model_constant_double("VV");
-	double LT = userInputs.get_model_constant_double("LT");
-	double FACTOR = userInputs.get_model_constant_double("FACTOR");
-	double OMEGA1 = userInputs.get_model_constant_double("OMEGA1");
-	double OMEGA2 = userInputs.get_model_constant_double("OMEGA2");
+	double TAU = userInputs.get_model_constant_double("TAU");
+	double KK = userInputs.get_model_constant_double("KK");
+	double amplitude = userInputs.get_model_constant_double("amplitude");
+
 	
 
 	// ================================================================

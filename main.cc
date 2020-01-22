@@ -1,20 +1,11 @@
 // Header files
-/*#include "/scratch/software/PRISM_PF/phaseField/include/ParseCommandLineOpts.h"
-#include "/scratch/software/PRISM_PF/phaseField/src/models/mechanics/computeStress.h"
-#include "/scratch/software/PRISM_PF/phaseField/include/inputFileReader.h"
+#include "../../include/ParseCommandLineOpts.h"
+#include "../../src/models/mechanics/computeStress.h"
+#include "../../include/inputFileReader.h"
 #include "customPDE.h"
 #include "equations.cc"
 #include "ICs_and_BCs.cc"
-#include "/scratch/software/PRISM_PF/phaseField/src/variableAttributeLoader/variableAttributeLoader.cc"
-*/
-
-#include "/home/kbhagat2/workspace/software/phaseField/include/ParseCommandLineOpts.h"
-#include "/home/kbhagat2/workspace/software/phaseField/src/models/mechanics/computeStress.h"
-#include "/home/kbhagat2/workspace/software/phaseField/include/inputFileReader.h"
-#include "/home/kbhagat2/workspace/software/phaseField/src/variableAttributeLoader/variableAttributeLoader.cc"
-#include "customPDE.h"
-#include "equations.cc"
-#include "ICs_and_BCs.cc"
+#include "../../src/variableAttributeLoader/variableAttributeLoader.cc"
 
 
 // Header file for postprocessing that may or may not exist
