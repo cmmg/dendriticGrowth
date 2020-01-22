@@ -28,11 +28,16 @@ namespace phaseField1
       // values(0)=0.63 + 0.02*(0.5 -(double)(std::rand() % 100 )/100.0); //c
       //values(0)=0.02 + 0.02*(0.5 -(double)(std::rand() % 100 )/100.0);
       // values(1)=0.0; //mu
-	double radii=5.0;
-	values(0)=-0.75;
-       
-	double dist= sqrt(p[0]*p[0]+p[1]*p[1])-radii;
-	values(1)= -std::tanh(dist/sqrt(2.0)) ;       
+
+      values(0)=-0.05;
+      values(1)=0;
+      //values(2)=0;
+      if (std::sqrt(p.square())<0.25) {
+	//values(0)=0.25; //-0.25;
+	values(1)=1.0;
+      }
+
+      
       
     }
   };
@@ -202,13 +207,13 @@ namespace phaseField1
 
   }
   
-  
+
   //Solve
   template <int dim>
- void phaseField<dim>::solveIteration(){
+  void phaseField<dim>::solveIteration(){
     TimerOutput::Scope t(computing_timer, "solve");
     LA::MPI::Vector completely_distributed_solution (locally_owned_dofs, mpi_communicator);
-    /*      
+    /*    
     //Iterative solvers from Petsc and Trilinos
     SolverControl solver_control (dof_handler.n_dofs(), 1e-12);
 #ifdef USE_PETSC_LA
@@ -229,8 +234,6 @@ namespace phaseField1
           << " iterations." << std::endl;
     */
     //Direct solver MUMPS
-
-    
     SolverControl cn;
     PETScWrappers::SparseDirectMUMPS solver(cn, mpi_communicator);
     solver.set_symmetric_mode(false);
@@ -240,31 +243,6 @@ namespace phaseField1
     dU = completely_distributed_solution; 
   }
 
-
-  /* template <int dim>
-  void phaseField<dim>::solveIteration ()
-  {
-    TimerOutput::Scope t(computing_timer, "solve");
-    PETScWrappers::MPI::Vector
-      completely_distributed_solution (locally_owned_dofs,mpi_communicator);
-    //distributed_incremental_displacement = incremental_displacement;
-    SolverControl           solver_control (dof_handler.n_dofs(),
-                                            1e-16*system_rhs.l2_norm());
-    PETScWrappers::SolverGMRES cg (solver_control,
-                                mpi_communicator);
-    PETScWrappers::PreconditionBlockJacobi preconditioner(system_matrix);
-    cg.solve (system_matrix,  completely_distributed_solution, system_rhs,
-              preconditioner);
-    constraints.distribute (completely_distributed_solution);
-    locally_relevant_solution = completely_distributed_solution;
-    dU = completely_distributed_solution;
-    pcout << "   Solved in " << solver_control.last_step()
-          << " iterations." << std::endl;
-  }
-
-  */
-
-  
   //Solve
   template <int dim>
   void phaseField<dim>::solve(){
@@ -354,8 +332,7 @@ namespace phaseField1
     for (currentTime=0; currentTime<totalTime; currentTime+=dt){
       currentIncrement++;
       solve();
-      int NSTEP=(currentTime/dt);
-      if (NSTEP%PSTEPS==0) output_results(currentIncrement);
+      output_results(currentIncrement);
       pcout << std::endl;
     }
     //computing_timer.print_summary ();

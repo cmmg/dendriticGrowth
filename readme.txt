@@ -1,5 +1,5 @@
-Paper - Multiscale Finite-Difference-Diffusion-Monte-Carlo Method for Simulating Dendritic Solidification” by 
+Paper - Modeling and numerical simulations of dendritic crystal growth
 
-Author- M.Plapp and A. Karma, Journal of Computational Physics, 165, 592-619 (2000)
+Author- Kobayashi 
 
 status - reproducable results 

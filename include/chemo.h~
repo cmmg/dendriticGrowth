@@ -60,9 +60,9 @@ void residualForChemo(FEValues<dim>& fe_values, unsigned int DOF, FEFaceValues<d
       //noise term
       std::srand(5);       
       double noise = amplitude*((double)(std::rand() % 100 )/100.0 - 0.5) ;
-      Sacado::Fad::DFad<double> capM = (0.9/3.1416)*std::atan(10*(1-c[q]));
-      Sacado::Fad::DFad<double>  newdFdC = phi[q]*(1-phi[q])*(phi[q]-0.5+ noise+ capM);
-      dfdc=newdFdC;  	
+      double capM = (0.9/3.1416)*std::atan(10*(1-c[q]));
+      double  newdFdC = phi[q]*(1-phi[q])*(phi[q]-0.5+ noise+ capM);
+      dfdc=newDFdC;  	
       //Sacado::Fad::DFad<double>  theta = Sacado::Fad::log(phi_j[q][1],phi_j[q][0]) ;
       double  theta = std::atan2(phi_j[q][1].val(), phi_j[q][0].val());
       //Sacado::Fad::DFad<double> angle = theta;
@@ -87,7 +87,7 @@ void residualForChemo(FEValues<dim>& fe_values, unsigned int DOF, FEFaceValues<d
       
       else if(ck==1) {	
 	R[i] +=  (1/dt)*fe_values.shape_value(i, q)*(phi[q] - phi_conv[q])*fe_values.JxW(q);  //d is added
-	R[i] += -(L)*fe_values.shape_value(i, q)*(dfdc)*fe_values.JxW(q);
+	R[i] += - (L)*fe_values.shape_value(i, q)*(dfdc)*fe_values.JxW(q);
 
 	for (unsigned int j = 0; j < dim; j++) {
 	  R[i]+= (L)*fe_values.shape_grad(i, q)[j]*BIGTERM[j]*fe_values.JxW(q);
