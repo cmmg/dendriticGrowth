@@ -1,7 +1,8 @@
 //problem geometry, mesh control
 #define DIMS 2
-#define problemWidth 9.0
-#define refinementFactor 8
+#define problem_Height 350
+#define problem_Width 350
+#define refinementFactor 6
 
 //phase field properties
 #define InterfaceEnergyParameter {1.0e-2, 1.0e-2, 1.0e-2} //{Kx, Ky, Kz}
@@ -9,18 +10,38 @@
 #define Mobility 1.0
 
 //time step controls
-#define TimeStep 0.0002
-#define TotalTime 10000*TimeStep
+#define TimeStep 0.06
+#define TotalTime 25000*TimeStep
 
 //output controls
 #define outputFileName "solution"
 
-//solidifcation kobayashi parameters 
-#define ebar 0.01
-#define delta 0.040
-#define mm 6.0
-#define theta0 0 //3.1416/2.0
-#define L 3333.33
-#define tau0 1.0/L   // (1/L) where L = 3333.33
-#define KK 2.0
-#define amplitude 0.01
+
+//soldification zhu
+#define aone 0.8839
+#define atwo  0.6267
+#define zhi 3.610
+#define lam aone*zhi  // 0.8839*54 = 47.73
+
+//#define D_tilda 30.0
+//#define thermalby1_k 28451.0
+
+//#define thermal 14794
+//#define VV 0.515
+#define ep 0.05
+#define mm 4.0
+#define theta0 0.0
+//#define ke 0.48
+
+//#define D 5.82
+#define D 1.0
+
+//#define DS 1.0
+//#define DL 3000.0
+
+//randomness parameters
+//#define OMEGA1 0.3
+//#define OMEGA2 0 //0.1 
+
+#define noise_c (2.0*pow(10.0,-4.0))*(1.0/TimeStep)*(1.0/0.8/0.8)
+#define noise_nc 0*(2.0/3.0)*pow(2.0,0.5)*zhi*noise_c

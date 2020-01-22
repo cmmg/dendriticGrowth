@@ -29,14 +29,42 @@ namespace phaseField1
       //values(0)=0.02 + 0.02*(0.5 -(double)(std::rand() % 100 )/100.0);
       // values(1)=0.0; //mu
 
-      values(0)=-0.05;
-      values(1)=0;
-      //values(2)=0;
-      if (std::sqrt(p.square())<0.25) {
-	//values(0)=0.25; //-0.25;
-	values(1)=1.0;
-      }
+	
+	values(0)=-0.65;
+	values(1)=-1.0;
+	//double centrex1=100;
 
+	//double centrex =0.0
+	//double centrey = 0.0;  
+	double radius =5.0 ;
+
+	double dist0 = (p[0])*(p[0]) + (p[1])*(p[1]) ;
+	dist0 = std::sqrt(dist0) ;
+
+	//double dist1 = (p[0]-centrex1)*(p[0]-centrex1) + (p[1]-centrey)*(p[1]-centrey) ;
+	//dist1 = std::sqrt(dist1) ;
+
+	//double dist2 = (p[0]-centrex2)*(p[0]-centrex2) + (p[1]-centrey)*(p[1]-centrey) ;
+	//dist2 = std::sqrt(dist2) ;
+
+	if (dist0 <=radius ) {values(0)=0; values(1) = 1.0;}
+	//if (dist1 <=radius ) { values(1) = 1.0;}	
+	//if (dist2 <=radius ) { values(1) = 1.0;}
+	
+	/*	double height = 2.0 ;
+	double dist = 0;
+	dist= (p[1]-height);
+	double root = pow(2.0,0.5);
+	
+	values(1)=-std::tanh(dist/root);
+	
+      
+    //  if (std::sqrt(p.square())<0.25) {
+	//values(0)=0.25; //-0.25;
+    //	values(1)=1.0;
+    // }
+
+    */
       
       
     }
@@ -207,7 +235,7 @@ namespace phaseField1
 
   }
   
-
+  /*
   //Solve
   template <int dim>
   void phaseField<dim>::solveIteration(){
@@ -233,6 +261,9 @@ namespace phaseField1
     pcout << "   Solved in " << solver_control.last_step()
           << " iterations." << std::endl;
     */
+
+  /* remove if needed
+    
     //Direct solver MUMPS
     SolverControl cn;
     PETScWrappers::SparseDirectMUMPS solver(cn, mpi_communicator);
@@ -241,8 +272,40 @@ namespace phaseField1
     constraints.distribute (completely_distributed_solution);
     locally_relevant_solution = completely_distributed_solution;
     dU = completely_distributed_solution; 
+    }  */ //remove if needed
+
+
+ //Solve iteration
+  template <int dim>
+  void phaseField<dim>::solveIteration ()
+  {
+    TimerOutput::Scope t(computing_timer, "solve");
+    PETScWrappers::MPI::Vector
+      completely_distributed_solution (locally_owned_dofs,mpi_communicator);
+    //distributed_incremental_displacement = incremental_displacement;
+    SolverControl           solver_control (dof_handler.n_dofs(),
+                                            1e-16*system_rhs.l2_norm());
+    PETScWrappers::SolverGMRES cg (solver_control,
+                                mpi_communicator);
+    PETScWrappers::PreconditionBlockJacobi preconditioner(system_matrix);
+    cg.solve (system_matrix,  completely_distributed_solution, system_rhs,
+              preconditioner);
+    constraints.distribute (completely_distributed_solution);
+    locally_relevant_solution = completely_distributed_solution;
+    dU = completely_distributed_solution;
+    pcout << "   Solved in " << solver_control.last_step()
+          << " iterations." << std::endl;
   }
 
+  
+
+  
+
+
+
+  
+
+  
   //Solve
   template <int dim>
   void phaseField<dim>::solve(){
@@ -309,8 +372,20 @@ namespace phaseField1
   template <int dim>
   void phaseField<dim>::run (){
     //setup problem geometry and mesh
-    GridGenerator::hyper_cube (triangulation, -problemWidth/2.0, problemWidth/2.0, true);
+    // GridGenerator::hyper_cube (triangulation, -problemWidth/2.0, problemWidth/2.0, true);
     //  GridGenerator::hyper_cube (triangulation, -10/2.0, 10/2.0, true);
+
+    //double problem_Width=3000.0, problem_Height=3000.0;
+    
+    Point<2> p1 (0,0);
+    Point<2> p2 (problem_Width,problem_Height);    
+    //GridGenerator::hyper_rectangle (triangulation, p1, p2, true);
+    std::vector<unsigned int> numRepetitions;
+    numRepetitions.push_back(refinementFactor); // x refinement
+    numRepetitions.push_back(refinementFactor*std::floor(problem_Height/problem_Width)); // y refinement
+    GridGenerator::subdivided_hyper_rectangle (triangulation, numRepetitions, p1, p2, true);
+
+
     triangulation.refine_global (refinementFactor);
     setup_system ();
     pcout << "   Number of active cells:       "
