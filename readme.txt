@@ -1,5 +1,6 @@
-Paper - Dependence of Dendritic Side-branches on Parameters in Phase-Field Simulations 
+Paper - Two-dimensional phase-field simulations of dendrite
+competitive growth during the directional solidification of a binary alloy bicrystal
 
-Author-  Zhu Changsheng;, Liu Baicheng, Jing Tao and Feng Wenfang 
+Author-  Tomohiro Takaki, Munekazu Ohno Takashi Shimokawabe and Takayuki Aoki
 
 status - reproducable results 

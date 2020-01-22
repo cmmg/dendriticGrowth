@@ -30,26 +30,29 @@ namespace phaseField1
       // values(1)=0.0; //mu
 
 	
-	values(0)=-0.65;
+	values(0)=-0.3;
 	values(1)=-1.0;
 	//double centrex1=100;
+	
+        	
+	double centrex0= 50 ;
+	double centrex1= 170 ;
+	double centrex2= 290 ;	
+	double centrey=0 ;
+       	double radius =1.0 ;
 
-	//double centrex =0.0
-	//double centrey = 0.0;  
-	double radius =5.0 ;
-
-	double dist0 = (p[0])*(p[0]) + (p[1])*(p[1]) ;
+	double dist0 = (p[0]-centrex0)*(p[0]-centrex0) + (p[1]-centrey)*(p[1]-centrey) ;
 	dist0 = std::sqrt(dist0) ;
 
-	//double dist1 = (p[0]-centrex1)*(p[0]-centrex1) + (p[1]-centrey)*(p[1]-centrey) ;
-	//dist1 = std::sqrt(dist1) ;
+	double dist1 = (p[0]-centrex1)*(p[0]-centrex1) + (p[1]-centrey)*(p[1]-centrey) ;
+	dist1 = std::sqrt(dist1) ;
 
-	//double dist2 = (p[0]-centrex2)*(p[0]-centrex2) + (p[1]-centrey)*(p[1]-centrey) ;
-	//dist2 = std::sqrt(dist2) ;
+	double dist2 = (p[0]-centrex2)*(p[0]-centrex2) + (p[1]-centrey)*(p[1]-centrey) ;
+	dist2 = std::sqrt(dist2) ;
 
-	if (dist0 <=radius ) {values(0)=0; values(1) = 1.0;}
-	//if (dist1 <=radius ) { values(1) = 1.0;}	
-	//if (dist2 <=radius ) { values(1) = 1.0;}
+	if (dist0 <=radius ) { values(1) = 1.0;}
+	if (dist1 <=radius ) { values(1) = 1.0;}	
+	if (dist2 <=radius ) { values(1) = 1.0;}
 	
 	/*	double height = 2.0 ;
 	double dist = 0;
