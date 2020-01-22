@@ -8,8 +8,8 @@ set Number of dimensions = 2
 # (Domain size Z ignored in 2D)
 # =================================================================================
 # Each axes spans from zero to the specified length
-set Domain size X = 1600
-set Domain size Y = 1000
+set Domain size X = 340
+set Domain size Y = 500
 set Domain size Z = 408
 
 
@@ -21,11 +21,11 @@ set Domain size Z = 408
 # The number of elements in each direction is 2^(refineFactor) * subdivisions
 # Subdivisions Z ignored in 2D
 # For optimal performance, use refineFactor primarily to determine the element size
-set Subdivisions X = 4
-set Subdivisions Y = 2
+set Subdivisions X = 3
+set Subdivisions Y = 3
 set Subdivisions Z = 3
 
-set Refine factor = 6
+set Refine factor = 7
 
 # Set the polynomial degree of the element (allowed values: 1, 2, or 3)
 set Element degree = 2
@@ -48,7 +48,7 @@ set Refinement criteria fields = phi  #phi
 
 # Set the maximum and minimum value of the fields where the mesh should be refined
 set Refinement window max = 2.0 #0.0 #0.9999
-set Refinement window min = -0.9 #-0.9999
+set Refinement window min = -0.8 #-0.9999
 
 # Set the number of time steps between remeshing operations
 set Steps between remeshing operations = 250
@@ -57,11 +57,11 @@ set Steps between remeshing operations = 250
 # Set the time step parameters
 # =================================================================================
 # The size of the time step
-set Time step = 0.002 #0.00006
+set Time step = 0.00006
 
 # The simulation ends when either the number of time steps is reached or the
 # simulation time is reached.
-set Number of time steps = 10000000 #250000000
+set Number of time steps = 350000000 #250000000
 
 # =================================================================================
 # Set the boundary conditions
@@ -84,15 +84,9 @@ set Number of time steps = 10000000 #250000000
 # set Boundary condition for variable n = NATURAL, NATURAL, DIRICHLET: 1.5, DIRICHLET: 1.5
 
 #set Boundary condition for variable u = DIRICHLET: -0.3 # equal to -deltaV
-#set Boundary condition for variable u = NATURAL
-#set Boundary condition for variable phi = NATURAL
-#set Boundary condition for variable mu = NATURAL
-
-set Boundary condition for variable u = PERIODIC, PERIODIC, NATURAL, NATURAL 	 
-set Boundary condition for variable phi= PERIODIC, PERIODIC, NATURAL, NATURAL			
-set Boundary condition for variable mu = PERIODIC, PERIODIC, NATURAL, NATURAL 		
-
-
+set Boundary condition for variable u = NATURAL
+set Boundary condition for variable phi = NATURAL
+set Boundary condition for variable mu = NATURAL
     
 # =================================================================================
 # Set the model constants
@@ -104,41 +98,42 @@ set Boundary condition for variable mu = PERIODIC, PERIODIC, NATURAL, NATURAL
 # where [symmetry] is ISOTROPIC, TRANSVERSE, ORTHOTROPIC, or ANISOTROPIC.
 
 #Undercooling
-set Model constant delta = -1.0, DOUBLE
+set Model constant delta = -0.3, DOUBLE
 
 # Non-dimensional diffusivity
-set Model constant D_tild = 5.82, DOUBLE
+set Model constant D_tild = 20.14, DOUBLE
 
 # Partition Coefficient
-set Model constant ke = 0.48, DOUBLE
+set Model constant ke = 0.14, DOUBLE
 
 #Ratio DS/DL
-set Model constant DSbyDL =0.000333 , DOUBLE
+set Model constant DSbyDL =0.000667 , DOUBLE
 
 # Anisotropy paramter
-set Model constant epsilonM = 0.01, DOUBLE
+set Model constant epsilonM = 0.02, DOUBLE
 
 # Rotation angle
 set Model constant theta0 = 0.0, DOUBLE
 
 # Rotation angle
-set Model constant theta01 = 0.0, DOUBLE
+set Model constant theta01 = 0.2618, DOUBLE
+
 
 # Symmetry factor
 set Model constant mult = 4.0, DOUBLE
 
 # Interfacial coupling lambda
-set Model constant lam = 9.28, DOUBLE
+set Model constant lam = 32.26, DOUBLE
 
 #Velocity
-set Model constant VV = 0.515, DOUBLE
+set Model constant VV = 0.314, DOUBLE
 
 #Thermal Length
-set Model constant LT = 14974.0, DOUBLE
+set Model constant LT = 498.0, DOUBLE
 
 
 #Amplitude of Gaussian Noise in concentration
-set Model constant FACTOR = 0.000000422, DOUBLE
+set Model constant FACTOR = 0.000000504, DOUBLE
 
 #Amplitude of Noise in concentration
 set Model constant OMEGA1 = 0.1, DOUBLE
@@ -157,16 +152,16 @@ set Output condition =EQUAL_SPACING
 
 # Number of times the program outputs the fields (total number for "EQUAL_SPACING"
 # and "LOG_SPACING", number per decade for "N_PER_DECADE", ignored for "LIST")
-set Number of outputs = 10000
+set Number of outputs = 25000
 
 # The number of time steps between updates being printed to the screen
-set Skip print steps = 100
+set Skip print steps = 10
 
 # =================================================================================
 # Set the checkpoint/restart parameters
 # =================================================================================
 # Whether to start this simulation from the checkpoint of a previous simulation
-set Load from a checkpoint = false
+set Load from a checkpoint = true #false
 
 # Type of spacing between checkpoints ("EQUAL_SPACING", "LOG_SPACING", "N_PER_DECADE",
 # or "LIST")
@@ -174,4 +169,4 @@ set Checkpoint condition = EQUAL_SPACING
 
 # Number of times the creates checkpoints (total number for "EQUAL_SPACING"
 # and "LOG_SPACING", number per decade for "N_PER_DECADE", ignored for "LIST")
-set Number of checkpoints = 10000
+set Number of checkpoints = 25000

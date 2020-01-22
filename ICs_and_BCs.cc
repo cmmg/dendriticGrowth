@@ -22,27 +22,6 @@ void customPDE<dim,degree>::setInitialCondition(const dealii::Point<dim> &p, con
 	  
 	  double rad[1] = {6.0};
   */
-
-
-  double height = 25.0 ;
-  double dist =0;
-
-  if (index == 0){
-    //  scalar_IC = -1.0 ; //-delta;                                                                                                                                                                                                                                              
-    scalar_IC = -1.0 ;
-  }
-
-  else if (index==1) {
-    dist=(height-p[1]);
-    scalar_IC= std::tanh(dist/std::sqrt(2.0));
-  }
-
-
-
-
-
-
-  /*
   double centrex1 = 50;
   double centrex2 =170;
   double centrex3 = 290;
@@ -90,7 +69,7 @@ void customPDE<dim,degree>::setInitialCondition(const dealii::Point<dim> &p, con
   }
 
   
-  */
+  
 	  
 
     /*
