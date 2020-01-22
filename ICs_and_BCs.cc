@@ -16,7 +16,9 @@ void customPDE<dim,degree>::setInitialCondition(const dealii::Point<dim> &p, con
 	  // given by "center" and its radius is given by "rad".
 
 	  double center[1][3] = {{1.0/2.0,1.0/2.0,1.0/2.0}};
-	  double rad[1] = {5.0};
+	  //double rad[1] = {5.0};
+	  double rad[1] = {0.25};
+	  
 	  double dist;
 	  scalar_IC = 0;
 
@@ -33,8 +35,11 @@ void customPDE<dim,degree>::setInitialCondition(const dealii::Point<dim> &p, con
 				  dist += (p[dir]-center[i][dir]*userInputs.domain_size[dir])*(p[dir]-center[i][dir]*userInputs.domain_size[dir]);
 			  }
 			  dist = std::sqrt(dist);
-
-			  scalar_IC += (-std::tanh((dist-rad[i])/(0.5)));
+			  
+			  if (dist<=rad[i]) { scalar_IC = 1.0; }
+			  else if (dist>=rad[i]) { scalar_IC = 0; }
+			  //  scalar_IC += (-std::tanh((dist-rad[i])/(0.5)));
+			  
 		  }
 	  }
 

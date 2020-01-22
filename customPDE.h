@@ -57,6 +57,11 @@ private:
 	double epsilonM = userInputs.get_model_constant_double("epsilonM");
 	double theta0 = userInputs.get_model_constant_double("theta0");
 	double mult = userInputs.get_model_constant_double("mult");
+	double TAU = userInputs.get_model_constant_double("TAU");
+	double KK = userInputs.get_model_constant_double("KK");
+	double amplitude = userInputs.get_model_constant_double("amplitude");
+
+	
 
 	// ================================================================
 
