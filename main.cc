@@ -1,13 +1,4 @@
 // Header files
-/*#include "/scratch/software/PRISM_PF/phaseField/include/ParseCommandLineOpts.h"
-#include "/scratch/software/PRISM_PF/phaseField/src/models/mechanics/computeStress.h"
-#include "/scratch/software/PRISM_PF/phaseField/include/inputFileReader.h"
-#include "customPDE.h"
-#include "equations.cc"
-#include "ICs_and_BCs.cc"
-#include "/scratch/software/PRISM_PF/phaseField/src/variableAttributeLoader/variableAttributeLoader.cc"
-*/
-
 #include "/home/kbhagat2/workspace/software/phaseField/include/ParseCommandLineOpts.h"
 #include "/home/kbhagat2/workspace/software/phaseField/src/models/mechanics/computeStress.h"
 #include "/home/kbhagat2/workspace/software/phaseField/include/inputFileReader.h"

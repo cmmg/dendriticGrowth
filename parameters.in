@@ -8,11 +8,9 @@ set Number of dimensions = 2
 # (Domain size Z ignored in 2D)
 # =================================================================================
 # Each axes spans from zero to the specified length
-set Domain size X = 340
-set Domain size Y = 500
+set Domain size X = 2000  #600
+set Domain size Y = 1000  #900
 set Domain size Z = 408
-
-
 
 
 # =================================================================================
@@ -21,11 +19,11 @@ set Domain size Z = 408
 # The number of elements in each direction is 2^(refineFactor) * subdivisions
 # Subdivisions Z ignored in 2D
 # For optimal performance, use refineFactor primarily to determine the element size
-set Subdivisions X = 3
-set Subdivisions Y = 3
-set Subdivisions Z = 3
+set Subdivisions X = 14 #6
+set Subdivisions Y = 7 #6
+set Subdivisions Z = 4 #6
 
-set Refine factor = 7
+set Refine factor = 6
 
 # Set the polynomial degree of the element (allowed values: 1, 2, or 3)
 set Element degree = 2
@@ -34,21 +32,21 @@ set Element degree = 2
 # Set the adaptive mesh refinement parameters
 # =================================================================================
 # Set the flag determining if adaptive meshing is activated
-set Mesh adaptivity =true
+set Mesh adaptivity = false #true
 
 # Set the maximum and minimum level of refinement
 # When adaptive meshing is enabled, the refine factor set in the block above is
 # only used to generate the first pass of the mesh as the initial conditions are
 # applied. It should be set somewhere between the max and min levels below.
-set Max refinement level = 7
+set Max refinement level = 6
 set Min refinement level = 0
 
 # Set the fields used to determine the refinement using their index.
 set Refinement criteria fields = phi  #phi
 
 # Set the maximum and minimum value of the fields where the mesh should be refined
-set Refinement window max = 2.0 #0.0 #0.9999
-set Refinement window min = -0.8 #-0.9999
+set Refinement window max =5 #0.0 #0.9999
+set Refinement window min =-5 #-0.9999
 
 # Set the number of time steps between remeshing operations
 set Steps between remeshing operations = 250
@@ -57,11 +55,11 @@ set Steps between remeshing operations = 250
 # Set the time step parameters
 # =================================================================================
 # The size of the time step
-set Time step = 0.00006
+set Time step = 0.0004 #0.00004
 
 # The simulation ends when either the number of time steps is reached or the
 # simulation time is reached.
-set Number of time steps = 350000000 #250000000
+set Number of time steps = 82500000 #250000000
 
 # =================================================================================
 # Set the boundary conditions
@@ -84,10 +82,15 @@ set Number of time steps = 350000000 #250000000
 # set Boundary condition for variable n = NATURAL, NATURAL, DIRICHLET: 1.5, DIRICHLET: 1.5
 
 #set Boundary condition for variable u = DIRICHLET: -0.3 # equal to -deltaV
-set Boundary condition for variable u = NATURAL
-set Boundary condition for variable phi = NATURAL
-set Boundary condition for variable mu = NATURAL
-    
+#set Boundary condition for variable u = NATURAL
+#set Boundary condition for variable phi = NATURAL
+#set Boundary condition for variable mu = NATURAL
+
+#set Boundary condition for variable name = TYPE(on left),TYPE(on right),TYPE(on bottom),TYPE(on top) 
+set Boundary condition for variable u = PERIODIC, PERIODIC, NATURAL, NATURAL 	 
+set Boundary condition for variable phi= PERIODIC, PERIODIC, NATURAL, NATURAL			
+set Boundary condition for variable mu = PERIODIC, PERIODIC, NATURAL, NATURAL 		
+
 # =================================================================================
 # Set the model constants
 # =================================================================================
@@ -98,49 +101,52 @@ set Boundary condition for variable mu = NATURAL
 # where [symmetry] is ISOTROPIC, TRANSVERSE, ORTHOTROPIC, or ANISOTROPIC.
 
 #Undercooling
-set Model constant delta = -0.3, DOUBLE
+set Model constant delta = -1.0, DOUBLE
 
 # Non-dimensional diffusivity
-set Model constant D_tild = 20.14, DOUBLE
+set Model constant D_tild = 62.73, DOUBLE
 
 # Partition Coefficient
-set Model constant ke = 0.14, DOUBLE
+set Model constant ke = 0.1, DOUBLE
 
 #Ratio DS/DL
-set Model constant DSbyDL =0.000667 , DOUBLE
+set Model constant DSbyDL =0.0, DOUBLE
 
 # Anisotropy paramter
-set Model constant epsilonM = 0.02, DOUBLE
+set Model constant epsilonM = 0.007, DOUBLE
 
 # Rotation angle
 set Model constant theta0 = 0.0, DOUBLE
 
 # Rotation angle
-set Model constant theta01 = 0.2618, DOUBLE
-
+set Model constant theta01 = 0.436, DOUBLE
 
 # Symmetry factor
 set Model constant mult = 4.0, DOUBLE
 
 # Interfacial coupling lambda
-set Model constant lam = 32.26, DOUBLE
+set Model constant lam = 100.10, DOUBLE
 
 #Velocity
-set Model constant VV = 0.314, DOUBLE
+set Model constant VV = 0.824, DOUBLE
 
 #Thermal Length
-set Model constant LT = 498.0, DOUBLE
-
+set Model constant LT = 5433.0, DOUBLE
 
 #Amplitude of Gaussian Noise in concentration
-set Model constant FACTOR = 0.000000504, DOUBLE
+#set Model constant FACTOR = 0.000000504, DOUBLE
 
 #Amplitude of Noise in concentration
-set Model constant OMEGA1 = 0.1, DOUBLE
+#set Model constant OMEGA1 = 0.1, DOUBLE
 
 #Amplitude of Noise in dfbydphi
-set Model constant OMEGA2 = 0.3, DOUBLE
+#set Model constant OMEGA2 = 0.3, DOUBLE
 
+#partition
+set Model constant PART = 700, DOUBLE
+
+#Solid Height
+set Model constant HEIGHT = 400, DOUBLE
 
 
 # =================================================================================
@@ -152,7 +158,7 @@ set Output condition =EQUAL_SPACING
 
 # Number of times the program outputs the fields (total number for "EQUAL_SPACING"
 # and "LOG_SPACING", number per decade for "N_PER_DECADE", ignored for "LIST")
-set Number of outputs = 25000
+set Number of outputs = 82500 #25000
 
 # The number of time steps between updates being printed to the screen
 set Skip print steps = 10
@@ -169,4 +175,4 @@ set Checkpoint condition = EQUAL_SPACING
 
 # Number of times the creates checkpoints (total number for "EQUAL_SPACING"
 # and "LOG_SPACING", number per decade for "N_PER_DECADE", ignored for "LIST")
-set Number of checkpoints = 25000
+set Number of checkpoints = 82500 #25000

@@ -2,7 +2,7 @@
 //Add gaussian noise generation
 // =================================================================================
 
-
+/*
 #include <cmath>
 #include <limits>
 
@@ -36,6 +36,8 @@ double generateGaussianNoise(double mu, double sigma)
 	z1 = sqrt(-2.0 * log(u1)) * sin(two_pi * u2);
 	return z0 * sigma + mu;
 }
+
+*/
 
 
 // =================================================================================
@@ -79,11 +81,11 @@ void variableAttributeLoader::loadVariableAttributes(){
   set_variable_type				(2,SCALAR);
   set_variable_equation_type		(2,AUXILIARY);
 
-    set_dependencies_value_term_RHS(2, "phi,u,grad(phi)");
+  set_dependencies_value_term_RHS(2, "phi,u,grad(phi)");
   //  set_dependencies_value_term_RHS(2, "phi,u");
   set_dependencies_gradient_term_RHS(2, "grad(phi)");
 	
-
+  
 }
 
 // =============================================================================================
@@ -116,19 +118,24 @@ void customPDE<dim,degree>::explicitEquationRHS(variableContainer<dim,degree,dea
 
   // --- Setting the expressions for the terms in the governing equations ---
 
-  
+  //prec-conditioned PF
+  scalarvalueType TANPF ; 
+
+  for (unsigned i=0; i< phi.n_array_elements;i++) {
+    TANPF[i]= std::tanh(phi[i]/std::sqrt(2.0)) ;
+  }
+ 
   // The azimuthal angle
   scalarvalueType theta,gradMAG;
-  for (unsigned i=0; i< phi.n_array_elements;i++){
+  for (unsigned i=0; i< phi.n_array_elements;i++) {
     theta[i] = std::atan2(phix[1][i],phix[0][i]);
     gradMAG[i]= std::sqrt(phix[0][i]*phix[0][i] + phix[1][i]*phix[1][i]);
   }
+  
  // Anisotropic gradient energy coefficient, its derivative and square. W is non-dimenisonalized so W0 is 1 and not used here
-
-
   scalarvalueType W ;
   for (unsigned i=0; i< phi.n_array_elements;i++){
-    if (q_point_loc[0][i]<120.0)      {
+    if (q_point_loc[0][i]<PART) {
 	W[i] = ((1.0)+(epsilonM)*std::cos((mult)*(theta[i]-(theta0))));
       }
     else
@@ -139,12 +146,13 @@ void customPDE<dim,degree>::explicitEquationRHS(variableContainer<dim,degree,dea
   
   
 
-  
-  
   scalarvalueType noise1;
   for (unsigned i=0; i< phi.n_array_elements;i++) {
-    // std::srand(std::sqrt(q_point_loc[0][i]*q_point_loc[0][i] + q_point_loc[1][i]*q_point_loc[1][i]));
-    //noise1[i]=(0.01)*(1-phi[i])*(OMEGA1)*( 2.0*(double)(std::rand() % 100)/100.0 -1.0 ) ;
+    //square root
+    std::srand(std::sqrt(q_point_loc[0][i]*q_point_loc[0][i] + q_point_loc[1][i]*q_point_loc[1][i]));
+    //square
+    //  std::srand((q_point_loc[0][i]*q_point_loc[0][i] + q_point_loc[1][i]*q_point_loc[1][i]));    
+    noise1[i]=(0.01)*(1-TANPF[i]*TANPF[i])*((double)(std::rand() % 100)/100.0 - 0.5 )*std::sqrt(userInputs.dtValue) ;
   }
 
    double TIME= this->currentTime;
@@ -153,44 +161,54 @@ void customPDE<dim,degree>::explicitEquationRHS(variableContainer<dim,degree,dea
   scalarvalueType TAU,QQ,UTAU;
 
   for (unsigned i=0; i< phi.n_array_elements;i++){
-    TAU[i]= (W[i]*W[i])*(1.0 - ((1-ke)/LT)*(q_point_loc[1][i]-VV*TIME)) ;
-    UTAU[i] = 1.0+ke-(1.0-ke)*phi[i]; 
+    TAU[i]= (W[i]*W[i])*( 1.0 - ((1-ke)/LT)*(q_point_loc[1][i]-VV*TIME)) ;
+     if (TAU[i]==0) { TAU[i]=ke*W[i]*W[i];}
+    //UTAU[i] = 1.0+ke-(1.0-ke)*phi[i];
+    UTAU[i] = 1.0+ke-(1.0-ke)*TANPF[i];
   }
 
-  QQ = constV(1.0)-phi + constV(ke)*(constV(1.0)+phi)*constV(DSbyDL);
-    
- 
-  scalarvalueType tau = TAU;
-
-  //Define Antiflux current, gaussian current
-  scalarvalueType std_dev;
-  scalargradType GAUSS_CURR ;
- for (unsigned i=0; i< phi.n_array_elements;i++){
-   std_dev[i]= std::sqrt(abs(2*( 1-phi[i] + ke*(1+phi[i])*(DSbyDL) )*(1+(1-ke)*u[i])*(FACTOR))) ;
-   std::srand(std::sqrt(q_point_loc[0][i]*q_point_loc[0][i] + q_point_loc[1][i]*q_point_loc[1][i]));
-   GAUSS_CURR[0][i]= generateGaussianNoise(0, std_dev[i]);
-   GAUSS_CURR[1][i]=generateGaussianNoise(0, std_dev[i]);
+ for (unsigned i=0; i< phi.n_array_elements;i++) {
+   if (1/*1-TANPF[i]>=1.0e-06*/)
+     QQ[i] = 1.0-TANPF[i]; 
+   else {
+     QQ[i] = 0; 
+   }
+     
  }
 
   
+ 
+  scalarvalueType tau = TAU;
+  //Define Antiflux current, gaussian current
   scalargradType JATF ;
-  for (unsigned i=0; i< phi.n_array_elements;i++){
+  for (unsigned i=0; i< phi.n_array_elements;i++) {
 
     if (gradMAG[i]==0) {JATF[0][i]=0;JATF[1][i]=0;}
     else {
-      JATF[0][i] = std::sqrt(1.0/2.0)*(1+(1-ke)*u[i])*(mu[i]/tau[i])*((userInputs.dtValue)/UTAU[i])*(phix[0][i]/gradMAG[i]);
-      JATF[1][i] = std::sqrt(1.0/2.0)*(1+(1-ke)*u[i])*(mu[i]/tau[i])*((userInputs.dtValue)/UTAU[i])*(phix[1][i]/gradMAG[i]);
+      if (1 /*std::abs(1-TANPF[i]*TANPF[i]) >=1.0e-06*/ ) {
+	JATF[0][i] = (1+(1-ke)*u[i])*(0.5*(1-TANPF[i]*TANPF[i]))*(mu[i]/tau[i])*(phix[0][i]/gradMAG[i]);   
+	JATF[1][i] = (1+(1-ke)*u[i])*(0.5*(1-TANPF[i]*TANPF[i]))*(mu[i]/tau[i])*(phix[1][i]/gradMAG[i]);
+
+	//JATF[0][i] = (1+(1-ke)*u[i])*(0.5*(1-TANPF[i]*TANPF[i]))*(mu[i]/tau[i])*(1.0/gradMAG[i]);   
+	//JATF[1][i] = (1+(1-ke)*u[i])*(0.5*(1-TANPF[i]*TANPF[i]))*(mu[i]/tau[i])*(1.0/gradMAG[i]);
+
+      }
+      else {
+	JATF[0][i]=0;
+	JATF[1][i]=0;
+      }
     }
   }
 
 
     // Define required equations
 
-  scalarvalueType eq_u = (u+ (constV(1.0)+constV(1.0-ke)*u)*(mu/tau/UTAU)*constV(userInputs.dtValue)+ noise1*constV(userInputs.dtValue)/UTAU )  ;
+  scalarvalueType eq_u = (u + constV(1.0/std::sqrt(2.0))*(constV(1.0)-TANPF*TANPF)*(constV(1.0)+constV(1.0-ke)*u)*(mu/tau)*(constV(userInputs.dtValue)/UTAU)+ noise1*constV(userInputs.dtValue)/UTAU )  ;
   //scalarvalueType eq_u = (u+ (constV(1.0)+constV(1.0-ke)*u)*(mu/tau/UTAU)*constV(userInputs.dtValue) )  ;
   
-  scalargradType eqx_u = (constV(-D_tild*userInputs.dtValue)*QQ*ux/UTAU) + (constV(-1.0)*JATF) + ((GAUSS_CURR)*constV(-1.0)*constV(userInputs.dtValue)/UTAU)  ;
- 
+  scalargradType eqx_u = (constV(-D_tild*userInputs.dtValue)*QQ*ux/UTAU) + (constV(-1.0)*JATF)*(constV(userInputs.dtValue)/UTAU)  ;
+  //scalargradType eqx_u = ((constV(-D_tild)*QQ*ux*(constV(userInputs.dtValue)/UTAU)) + (constV(-1.0)*JATF*phix)*(constV(userInputs.dtValue)/UTAU))  ;
+			  
   //scalarvalueType eq_phi = (phi+constV(userInputs.dtValue)*mu/tau);
   scalarvalueType eq_phi = (phi+ constV(userInputs.dtValue)*mu/tau);
  
@@ -231,27 +249,28 @@ void customPDE<dim,degree>::nonExplicitEquationRHS(variableContainer<dim,degree,
   scalarvalueType phi = variable_list.get_scalar_value(1);
   scalargradType phix = variable_list.get_scalar_gradient(1);
   double TIME= this->currentTime;
- 
-  scalarvalueType noise2;
-  for (unsigned i=0; i< u.n_array_elements;i++) {
-    //std::srand(std::sqrt(q_point_loc[0][i]*q_point_loc[0][i] + q_point_loc[1][i]*q_point_loc[1][i]));    
-    //  noise2[i]=(0.01)*(OMEGA2)*( 2.0*(double)(std::rand() % 100)/100.0 -1.0 ) ;    
-  }
 
+
+  //prec-conditioned PF
+  scalarvalueType TANPF ;
+    for (unsigned i=0; i< phi.n_array_elements;i++) {
+    TANPF[i]= std::tanh(phi[i]/std::sqrt(2.0) ) ;
+  }
+ 
   scalarvalueType THERM;
-   for (unsigned i=0; i< u.n_array_elements;i++){
+   for (unsigned i=0; i< u.n_array_elements;i++) {
      THERM[i]= (1.0/LT)*(q_point_loc[1][i]-VV*TIME)  ;
   }
 
-  
   // Derivative of the free energy density with respect to phi
-   //scalarvalueType f_phi = -( phi-(phi*phi*phi)-constV(lam)*(constV(1.0)-phi*phi)*(constV(1.0)-phi*phi)*(u+THERM+noise2) ) ;
-   scalarvalueType f_phi = -( phi-(phi*phi*phi)-constV(lam)*(constV(1.0)-phi*phi)*(constV(1.0)-phi*phi)*(u+THERM ) ) ;
+   scalarvalueType f_phi= -(TANPF*constV(std::sqrt(2.0))-constV(std::sqrt(2.0))*constV(lam)*(constV(1.0)-TANPF*TANPF)*(u+THERM));
+
    
   // The azimuthal angle
-  scalarvalueType theta;
-  for (unsigned i=0; i< phi.n_array_elements;i++){
+   scalarvalueType theta,gradMAG;
+  for (unsigned i=0; i< phi.n_array_elements;i++) {
     theta[i] = std::atan2(phix[1][i],phix[0][i]);
+    gradMAG[i]= std::sqrt(phix[0][i]*phix[0][i] + phix[1][i]*phix[1][i]);
   }
 
   // Anisotropic gradient energy coefficient, its derivative and square
@@ -260,8 +279,8 @@ void customPDE<dim,degree>::nonExplicitEquationRHS(variableContainer<dim,degree,
 
  scalarvalueType W ;
  scalarvalueType W_theta;
-  for (unsigned i=0; i< phi.n_array_elements;i++){
-    if (q_point_loc[0][i]<120.0) {
+  for (unsigned i=0; i< phi.n_array_elements;i++) {
+    if (q_point_loc[0][i]<PART) {
       W[i] = ((1.0)+(epsilonM)*std::cos((mult)*(theta[i]-(theta0))));
       W_theta[i] = (-1.0)*((epsilonM)*(mult)*std::sin((mult)*(theta[i]-(theta0))));
     }
@@ -271,18 +290,25 @@ void customPDE<dim,degree>::nonExplicitEquationRHS(variableContainer<dim,degree,
     }
   }
 
+  //extra term to incorporate in pde for phi
+  scalarvalueType extraTerm = W*W*constV(std::sqrt(2.0))*TANPF*gradMAG*gradMAG;
   
- 
-  
-			   
-
   // The anisotropy term that enters in to the  equation for mu
   scalargradType aniso;
-  aniso[0] = W*W*phix[0]-W*W_theta*phix[1];
-  aniso[1] = W*W*phix[1]+W*W_theta*phix[0];
+
+  for (unsigned i=0; i< phi.n_array_elements;i++) {
+    if (1 /*std::abs(1-TANPF[i]*TANPF[i]) >=1.0e-06*/) {
+       aniso[0][i] = W[i]*W[i]*phix[0][i]-W[i]*W_theta[i]*phix[1][i];
+       aniso[1][i] = W[i]*W[i]*phix[1][i]+W[i]*W_theta[i]*phix[0][i];       
+     }
+     else {
+       aniso[0][i] = 0;
+       aniso[1][i] = 0;
+     }
+  }
 
   // Define the terms in the equations
-  scalarvalueType eq_mu = (-f_phi);
+  scalarvalueType eq_mu = (-f_phi-extraTerm);
   scalargradType eqx_mu = (-aniso);
 
   // --- Submitting the terms for the governing equations ---

@@ -1,8 +1,6 @@
 //#include "/scratch/software/PRISM_PF/phaseField/include/matrixFreePDE.h"
 #include "/home/kbhagat2/workspace/software/phaseField/include/matrixFreePDE.h"
 
-
-
 template <int dim, int degree>
 class customPDE: public MatrixFreePDE<dim,degree>
 {
@@ -65,11 +63,12 @@ private:
 	double lam = userInputs.get_model_constant_double("lam");
 	double VV = userInputs.get_model_constant_double("VV");
 	double LT = userInputs.get_model_constant_double("LT");
-	double FACTOR = userInputs.get_model_constant_double("FACTOR");
-	double OMEGA1 = userInputs.get_model_constant_double("OMEGA1");
-	double OMEGA2 = userInputs.get_model_constant_double("OMEGA2");
+	//double FACTOR = userInputs.get_model_constant_double("FACTOR");
+	//double OMEGA1 = userInputs.get_model_constant_double("OMEGA1");
+	//double OMEGA2 = userInputs.get_model_constant_double("OMEGA2");
+	double PART = userInputs.get_model_constant_double("PART");
+	double HEIGHT = userInputs.get_model_constant_double("HEIGHT");
 	
-
 	// ================================================================
 
 };
