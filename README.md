@@ -1,7 +1,7 @@
 # dendriticGrowth 
 
 ### About
-dendriticGrowth is a C++ code for C++ code developed to model complex dendrites observed in the solidification of the pure metal and binary alloy using the phase-field models and finite-element method. The master branch has a finite-element code that models heat diffusion and the diffusion of the phase-field order parameter in the evolution of a single equiaxed dendrite of a pure melt. The other branches have a code for different types of dendrites such as single equiaxed, single columnar, and multi-columnar dendrites. The salient features of the computational implementation are: high-fidelity MPI-based parallel implementation, support for direct and iterative solvers with preconditioning, and fully implicit time-stepping schemes. 
+dendriticGrowth is a C++ code developed to model complex dendrites observed in the solidification of the pure metal and binary alloy using the phase-field models and finite-element method. The master branch has a finite-element code that models heat diffusion and the diffusion of the phase-field order parameter in the evolution of a single equiaxed dendrite of a pure melt. The other branches have a code for different types of dendrites such as single equiaxed, single columnar, and multi-columnar dendrites. The salient features of the computational implementation are: high-fidelity MPI-based parallel implementation, support for direct and iterative solvers with preconditioning, and fully implicit time-stepping schemes. 
 
 ### Installation:
 
